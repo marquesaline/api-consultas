@@ -1,3 +1,53 @@
 from django.contrib import admin
 
-# Register your models here.
+from consultas.models import Profissional, Consulta
+
+
+@admin.register(Profissional)
+class ProfissionalAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'nome',
+        'prof_nome_social',
+        'especialidade'
+    ]
+
+    list_filter = (
+        ('id', admin.AllValuesFieldListFilter),
+        ('especialidade', admin.AllValuesFieldListFilter)
+    )
+
+    search_fields = (
+        'id',
+        'nome',
+        'prof_nome_social',
+        'especialidade'
+    )
+
+
+@admin.register(Consulta)
+class ConsultaAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'paciente',
+        'pac_nome_social',
+        'profissional',
+        'data_consulta'
+    ]
+
+    search_fields = (
+        'id',
+        'paciente',
+        'pac_nome_social',
+        'profissional',
+        'data_consulta'
+    )
+
+    autocomplete_fields = ['profissional']
+
+    list_filter = (
+        ('id', admin.AllValuesFieldListFilter),
+        ('profissional', admin.AllValuesFieldListFilter)
+    )
+
+
