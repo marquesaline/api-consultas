@@ -36,26 +36,26 @@ class ProfissionaisView(APIView):
     
 
 class ProfissionalView(APIView):
-    def get_404_view(self, id):
+    def get_404_return(self, id):
         return Response(
             {'erro': f'Não foi possível encontrar um profissional com o id: {id}'}, 
             status=status.HTTP_404_NOT_FOUND
         )  
 
-    def get(self, request, id, *args, **kwargs):
-        profissional = Profissional.objects.filter(id=id).first()
+    def get(self, request, profissional_id, *args, **kwargs):
+        profissional = Profissional.objects.filter(id=profissional_id).first()
 
         if not profissional:
-            return self.get_404_view(id)
+            return self.get_404_return(id)
         
         serializer = ProfissionalSerializer(profissional)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id, *args, **kwargs):
-        profissional = Profissional.objects.filter(id=id).first()
+    def put(self, request, profissional_id, *args, **kwargs):
+        profissional = Profissional.objects.filter(id=profissional_id).first()
 
         if not profissional:
-            return self.get_404_view(id)
+            return self.get_404_return(profissional_id)
         
         data = {
             'nome': request.data.get('nome'),
@@ -76,11 +76,11 @@ class ProfissionalView(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    def delete(self, request, id):
-        profissional = Profissional.objects.filter(id=id).first()
+    def delete(self, request, profissional_id):
+        profissional = Profissional.objects.filter(id=profissional_id).first()
 
         if not profissional:
-            return self.get_404_view(id)
+            return self.get_404_return(profissional_id)
         
         profissional.delete()
         return Response(
@@ -102,7 +102,6 @@ class ConsultasView(APIView):
             'data_consulta': request.data.get('data_consulta'),
             'profissional': request.data.get('profissional')
         }
-
         serializer = ConsultaSerializer(data=data)
 
         if serializer.is_valid():
@@ -119,55 +118,64 @@ class ConsultasView(APIView):
     
 
 class ConsultaView(APIView):
-    def get_404_view(self, id):
+    def get_404_return(self, id):
         return Response(
             {'erro': f'Não foi possível encontrar uma consulta com o id: {id}'}, 
             status=status.HTTP_404_NOT_FOUND
         )  
 
-    def get(self, request, id, *args, **kwargs):
-        consulta = Consulta.objects.filter(id=id).first()
+    def get(self, request, consulta_id, *args, **kwargs):
+        consulta = Consulta.objects.filter(id=consulta_id).first()
 
         if not consulta:
-            return self.get_404_view(id)
+            return self.get_404_return(consulta_id)
         
         serializer = ConsultaSerializer(consulta)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id, *args, **kwargs):
-        consulta = Consulta.objects.filter(id=id).first()
+    def put(self, request, consulta_id, *args, **kwargs):
+        consulta = Consulta.objects.filter(id=consulta_id).first()
 
         if not consulta:
-            return self.get_404_view(id)
+            return self.get_404_return(consulta_id)
         
         data = {
-            'nome': request.data.get('nome'),
+            'paciente': request.data.get('paciente'),
             'nome_social': request.data.get('nome_social') if request.data.get('nome_social') else '',
-            'especialidade': request.data.get('especialidade'),
+            'data_consulta': request.data.get('data_consulta'),
+            'profissional': request.data.get('profissional')
         }
         serializer = ConsultaSerializer(instance=consulta, data=data)
 
         if serializer.is_valid():
             serializer.save()
             return Response({
-                'mensagem': 'consulta atualizado com sucesso',
+                'mensagem': 'Consulta atualizada com sucesso',
                 'detalhes': serializer.data
             }, status=status.HTTP_201_CREATED)
         
         return Response({
-            'erro': 'Confira os dados informados'}, 
+            'erro': serializer.errors}, 
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    def delete(self, request, id):
-        consulta = Consulta.objects.filter(id=id).first()
+    def delete(self, request, consulta_id):
+        consulta = Consulta.objects.filter(id=consulta_id).first()
 
         if not consulta:
-            return self.get_404_view(id)
+            return self.get_404_return(consulta_id)
         
         consulta.delete()
         return Response(
             {'mensagem': 'Consulta excluída com sucesso'},
             status=status.HTTP_200_OK
         )
+    
+
+class ConsultaProfissionalView(APIView):
+    
+    def get(self, request, profissional_id):
+        consultas = Consulta.objects.filter(profissional=profissional_id).all()
+        serializer = ConsultaSerializer(consultas, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
