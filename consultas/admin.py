@@ -8,7 +8,7 @@ class ProfissionalAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'nome',
-        'prof_nome_social',
+        'nome_social',
         'especialidade'
     ]
 
@@ -20,7 +20,7 @@ class ProfissionalAdmin(admin.ModelAdmin):
     search_fields = (
         'id',
         'nome',
-        'prof_nome_social',
+        'nome_social',
         'especialidade'
     )
 
@@ -30,7 +30,7 @@ class ConsultaAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'paciente',
-        'pac_nome_social',
+        'nome_social',
         'profissional',
         'data_consulta'
     ]
@@ -38,7 +38,7 @@ class ConsultaAdmin(admin.ModelAdmin):
     search_fields = (
         'id',
         'paciente',
-        'pac_nome_social',
+        'nome_social',
         'profissional',
         'data_consulta'
     )
