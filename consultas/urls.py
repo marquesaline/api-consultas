@@ -2,6 +2,7 @@ from django.urls import path
 
 from consultas.views import ConsultaView, ConsultasView, ProfissionaisView, ProfissionalView, ConsultaProfissionalView
 
+app_name = 'consultas'
 urlpatterns = [
     path('', ConsultasView.as_view(), name='consultas'),
     path('<int:consulta_id>', ConsultaView.as_view(), name='consulta'),

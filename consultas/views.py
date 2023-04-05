@@ -42,7 +42,8 @@ class ProfissionalView(APIView):
             status=status.HTTP_404_NOT_FOUND
         )  
 
-    def get(self, request, profissional_id, *args, **kwargs):
+    def get(self, request, **kwargs):
+        profissional_id = kwargs.get('profissional_id')
         profissional = Profissional.objects.filter(id=profissional_id).first()
 
         if not profissional:
@@ -51,7 +52,8 @@ class ProfissionalView(APIView):
         serializer = ProfissionalSerializer(profissional)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, profissional_id, *args, **kwargs):
+    def put(self, request, **kwargs):
+        profissional_id = kwargs.get('profissional_id')
         profissional = Profissional.objects.filter(id=profissional_id).first()
 
         if not profissional:
@@ -69,14 +71,15 @@ class ProfissionalView(APIView):
             return Response({
                 'mensagem': 'Profissional atualizado com sucesso',
                 'detalhes': serializer.data
-            }, status=status.HTTP_201_CREATED)
+            }, status=status.HTTP_200_OK)
         
         return Response({
             'erro': 'Confira os dados informados'}, 
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    def delete(self, request, profissional_id):
+    def delete(self, request, **kwargs):
+        profissional_id = kwargs.get('profissional_id')
         profissional = Profissional.objects.filter(id=profissional_id).first()
 
         if not profissional:
@@ -102,6 +105,14 @@ class ConsultasView(APIView):
             'data_consulta': request.data.get('data_consulta'),
             'profissional': request.data.get('profissional')
         }
+        profissional = Profissional.objects.filter(id=data['profissional'])
+
+        if not profissional: 
+            return Response(
+                {'erro': f'Não foi possível encontrar um profissional com o id: {id}'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )  
+
         serializer = ConsultaSerializer(data=data)
 
         if serializer.is_valid():
@@ -124,7 +135,8 @@ class ConsultaView(APIView):
             status=status.HTTP_404_NOT_FOUND
         )  
 
-    def get(self, request, consulta_id, *args, **kwargs):
+    def get(self, request, **kwargs):
+        consulta_id = kwargs.get('consulta_id')
         consulta = Consulta.objects.filter(id=consulta_id).first()
 
         if not consulta:
@@ -133,7 +145,8 @@ class ConsultaView(APIView):
         serializer = ConsultaSerializer(consulta)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, consulta_id, *args, **kwargs):
+    def put(self, request, **kwargs):
+        consulta_id = kwargs.get('consulta_id')
         consulta = Consulta.objects.filter(id=consulta_id).first()
 
         if not consulta:
@@ -152,14 +165,15 @@ class ConsultaView(APIView):
             return Response({
                 'mensagem': 'Consulta atualizada com sucesso',
                 'detalhes': serializer.data
-            }, status=status.HTTP_201_CREATED)
+            }, status=status.HTTP_200_OK)
         
         return Response({
             'erro': serializer.errors}, 
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    def delete(self, request, consulta_id):
+    def delete(self, request, **kwargs):
+        consulta_id = kwargs.get('consulta_id')
         consulta = Consulta.objects.filter(id=consulta_id).first()
 
         if not consulta:
@@ -174,8 +188,10 @@ class ConsultaView(APIView):
 
 class ConsultaProfissionalView(APIView):
     
-    def get(self, request, profissional_id):
+    def get(self, request, **kwargs):
+        profissional_id = kwargs.get('profissional_id')
         consultas = Consulta.objects.filter(profissional=profissional_id).all()
+
         serializer = ConsultaSerializer(consultas, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
